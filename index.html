@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090f14">
+  <meta name="description" content="BesterLauncher — Minecraft Java и Bedrock, сборки, моды и игра с друзьями в одном лаунчере для Windows.">
+  <link rel="icon" href="__LOGO_DATA__">
+  <title>BesterLauncher — Minecraft в одном лаунчере</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090f14;
+      --bg-2: #0d151b;
+      --panel: #111b22;
+      --panel-2: #141f26;
+      --line: rgba(195, 223, 211, .12);
+      --text: #f4f8f6;
+      --muted: #a1adb2;
+      --dim: #77848b;
+      --green: #22e77e;
+      --green-2: #13bb64;
+      --mint: #95ffc4;
+      --shadow: 0 28px 90px rgba(0, 0, 0, .42);
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body {
+      min-width: 320px; margin: 0; overflow-x: hidden; color: var(--text);
+      background: radial-gradient(ellipse at 74% 3%, rgba(26, 119, 78, .16), transparent 36rem),
+                  radial-gradient(ellipse at 8% 39%, rgba(21, 71, 79, .13), transparent 32rem), var(--bg);
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: -1; opacity: .28;
+      background-image: radial-gradient(circle, rgba(183,255,213,.78) 1px, transparent 2px);
+      background-size: 137px 119px; background-position: 15px 5px;
+      mask-image: linear-gradient(to bottom, black, transparent 74%);
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+    .wrap { width: min(1180px, calc(100% - 48px)); margin-inline: auto; }
+    .header {
+      position: sticky; top: 0; z-index: 20; border-bottom: 1px solid rgba(210,240,227,.08);
+      background: rgba(9,15,20,.86); backdrop-filter: blur(18px);
+    }
+    .nav { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 26px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; min-width: 230px; text-decoration: none; }
+    .brand-logo { width: 42px; height: 44px; object-fit: contain; filter: drop-shadow(0 0 12px rgba(34,231,126,.22)); }
+    .brand-name { display: flex; align-items: baseline; gap: 0; font-size: 20px; font-weight: 850; letter-spacing: -.055em; }
+    .brand-name span:first-child { color: var(--green); }
+    .brand-name span:last-child { color: #f1f6f3; }
+    .nav-side { display: flex; align-items: center; gap: 25px; }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-links a { color: #b7c1c5; font-size: 13px; text-decoration: none; font-weight: 650; transition: color .2s; }
+    .nav-links a:hover { color: var(--mint); }
+    .nav-actions { display: flex; align-items: center; gap: 9px; }
+    .lang-button { min-width: 42px; height: 40px; padding: 0 10px; border: 1px solid var(--line); border-radius: 12px; color: #d6e0da; background: rgba(255,255,255,.025); font-size: 11px; font-weight: 850; cursor: pointer; }
+    .lang-button:hover { border-color: rgba(34,231,126,.55); }
+    .button { min-height: 46px; padding: 0 18px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid transparent; border-radius: 13px; text-decoration: none; font-size: 13px; font-weight: 850; transition: transform .2s, box-shadow .2s, background .2s, border-color .2s; }
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { color: #05130b; background: linear-gradient(135deg, #37f28a, #15d872); box-shadow: 0 8px 28px rgba(20,219,108,.17); }
+    .button-primary:hover { box-shadow: 0 12px 38px rgba(20,219,108,.3); }
+    .button-quiet { color: #ecf4ef; border-color: rgba(204,232,215,.16); background: rgba(255,255,255,.035); }
+    .button-quiet:hover { border-color: rgba(34,231,126,.4); background: rgba(34,231,126,.055); }
+    .arrow { font-size: 17px; line-height: 1; }
+
+    .hero { padding: 78px 0 68px; display: grid; grid-template-columns: .77fr 1.23fr; gap: 46px; align-items: center; min-height: 595px; }
+    .hero-copy { position: relative; z-index: 1; }
+    .eyebrow { width: fit-content; display: flex; align-items: center; gap: 9px; padding: 8px 12px; border: 1px solid rgba(34,231,126,.2); border-radius: 99px; color: #a5efc1; background: rgba(20,140,75,.11); font-size: 10px; letter-spacing: .13em; font-weight: 900; text-transform: uppercase; }
+    .status-dot { position: relative; width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; background: var(--green); box-shadow: 0 0 14px rgba(34,231,126,.78); }
+    .status-dot::after { content: ""; position: absolute; inset: -5px; border: 1px solid rgba(34,231,126,.3); border-radius: 50%; animation: pulse 2.3s ease-out infinite; }
+    h1 { margin: 23px 0 18px; font-size: clamp(43px, 5.3vw, 68px); line-height: .99; letter-spacing: -.075em; font-weight: 880; }
+    .green-text { color: var(--green); text-shadow: 0 0 40px rgba(34,231,126,.13); }
+    .hero-lead { max-width: 460px; margin: 0; color: #abb7b8; font-size: 16px; line-height: 1.72; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 27px; }
+    .hero-actions .button { min-height: 51px; padding-inline: 19px; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; }
+    .meta-chip { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid rgba(204,231,216,.1); border-radius: 9px; color: #a3b0b2; background: rgba(255,255,255,.025); font-size: 10px; font-weight: 750; }
+    .meta-chip b { color: #e4eee8; }
+    .meta-green { color: #99f7bb; border-color: rgba(34,231,126,.14); background: rgba(34,231,126,.055); }
+
+    .hero-visual { position: relative; min-width: 0; }
+    .visual-glow { position: absolute; z-index: -1; inset: 11% 5%; border-radius: 50%; background: rgba(27,222,117,.13); filter: blur(66px); animation: glow 6s ease-in-out infinite; }
+    .launcher-frame { position: relative; padding: 8px; border: 1px solid rgba(186,242,211,.2); border-radius: 19px; background: linear-gradient(145deg, rgba(28,45,47,.96), rgba(10,18,22,.98)); box-shadow: 0 32px 88px rgba(0,0,0,.45), 0 0 50px rgba(34,231,126,.07); transform: perspective(1500px) rotateY(-2deg); transition: transform .35s, box-shadow .35s; }
+    .launcher-frame:hover { transform: perspective(1500px) rotateY(0) translateY(-3px); box-shadow: 0 38px 100px rgba(0,0,0,.5), 0 0 60px rgba(34,231,126,.12); }
+    .launcher-shot { display: block; width: 100%; height: auto; aspect-ratio: 25 / 16; object-fit: cover; border-radius: 12px; background: #10191e; }
+    .shot-caption { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 11px 5px 3px; color: #81918a; font-size: 10px; font-weight: 700; }
+    .shot-caption strong { color: #c7d4cd; font-size: 11px; }
+    .shot-caption span:last-child { color: #95eab2; }
+    .shot-pin { position: absolute; right: 22px; top: 21px; display: inline-flex; gap: 7px; align-items: center; padding: 8px 10px; color: #baf6ce; border: 1px solid rgba(119,255,166,.24); border-radius: 99px; background: rgba(7,20,13,.8); backdrop-filter: blur(8px); font-size: 9px; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; }
+    .shot-pin .status-dot { width: 6px; height: 6px; }
+
+    .quick-strip { border-block: 1px solid rgba(196,232,211,.09); background: rgba(255,255,255,.018); }
+    .quick-inner { display: grid; grid-template-columns: repeat(4,1fr); }
+    .quick-item { min-height: 77px; display: flex; align-items: center; justify-content: center; gap: 11px; border-right: 1px solid rgba(196,232,211,.075); }
+    .quick-item:last-child { border-right: 0; }
+    .quick-icon { width: 29px; height: 29px; display: grid; place-items: center; border-radius: 9px; color: #78f7a5; background: rgba(34,231,126,.09); font-size: 14px; font-weight: 900; }
+    .quick-item strong { display: block; color: #e2ece5; font-size: 12px; }
+    .quick-item small { display: block; margin-top: 3px; color: #83918b; font-size: 10px; }
+
+    .section { padding: 86px 0; scroll-margin-top: 92px; }
+    .section-head { max-width: 665px; margin-bottom: 30px; }
+    .kicker { color: #70e99d; font-size: 10px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+    h2 { margin: 10px 0 11px; font-size: clamp(31px, 4vw, 44px); line-height: 1.08; letter-spacing: -.06em; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+    h2[data-i18n="featuresTitle"] { white-space: pre-line; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; }
+    .feature-card { min-height: 185px; padding: 22px; border: 1px solid rgba(198,227,210,.1); border-radius: 18px; background: linear-gradient(145deg, rgba(19,31,37,.94), rgba(13,22,27,.88)); transition: transform .22s, border-color .22s, background .22s; }
+    .feature-card:hover { transform: translateY(-4px); border-color: rgba(34,231,126,.34); background: linear-gradient(145deg, rgba(21,43,34,.96), rgba(13,26,28,.95)); }
+    .feature-icon { width: 40px; height: 40px; display: grid; place-items: center; margin-bottom: 16px; border: 1px solid rgba(34,231,126,.18); border-radius: 12px; color: #88f9ae; background: rgba(34,231,126,.08); font-size: 17px; font-weight: 900; }
+    .feature-card h3 { margin: 0 0 8px; color: #edf4ef; font-size: 15px; letter-spacing: -.025em; }
+    .feature-card p { margin: 0; color: #9eaca6; font-size: 12px; line-height: 1.66; }
+
+    .release-box { display: grid; grid-template-columns: .78fr 1.22fr; gap: 34px; align-items: center; padding: 32px; border: 1px solid rgba(34,231,126,.19); border-radius: 23px; background: radial-gradient(ellipse at 7% 0%, rgba(34,231,126,.11), transparent 55%), linear-gradient(135deg, #121f22, #0e191e); box-shadow: 0 18px 60px rgba(0,0,0,.19); }
+    .release-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid rgba(34,231,126,.18); border-radius: 99px; color: #a2f4bd; background: rgba(34,231,126,.07); font-size: 9px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+    .release-version { margin: 17px 0 3px; color: #f0fbf3; font-size: 61px; line-height: 1; font-weight: 900; letter-spacing: -.08em; }
+    .release-copy { max-width: 300px; margin: 0; color: #9eaaa6; font-size: 12px; line-height: 1.65; }
+    .release-list { display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; }
+    .release-list li { display: flex; align-items: flex-start; gap: 10px; color: #d5e0d9; font-size: 12px; line-height: 1.58; }
+    .checkmark { width: 19px; height: 19px; flex: 0 0 auto; display: grid; place-items: center; margin-top: 1px; border-radius: 50%; color: var(--green); background: rgba(34,231,126,.1); font-size: 10px; font-weight: 900; }
+    .update-note { margin-top: 16px; padding: 12px 14px; border: 1px solid rgba(255,207,118,.16); border-radius: 12px; color: #c0b79f; background: rgba(255,207,118,.045); font-size: 10px; line-height: 1.65; }
+    .update-note strong { color: #f4ce83; }
+
+    .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    details { padding: 17px 18px; border: 1px solid rgba(196,228,210,.1); border-radius: 14px; background: rgba(17,28,33,.8); }
+    summary { display: flex; justify-content: space-between; gap: 15px; list-style: none; cursor: pointer; color: #e8f1eb; font-size: 12px; font-weight: 800; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--green); font-size: 17px; line-height: 1; }
+    details[open] summary::after { content: "−"; }
+    details p { margin: 12px 0 0; color: #9eaaa5; font-size: 11px; line-height: 1.7; }
+
+    .closing { padding: 0 0 76px; }
+    .closing-box { padding: 44px 22px; border: 1px solid rgba(34,231,126,.18); border-radius: 24px; text-align: center; background: radial-gradient(ellipse at 50% 0%, rgba(34,231,126,.12), transparent 65%), #101b20; }
+    .closing-box h2 { margin: 8px 0 10px; }
+    .closing-box p { max-width: 590px; margin: 0 auto 21px; color: #a0ada7; font-size: 13px; line-height: 1.7; }
+    .closing-box .button { min-height: 50px; }
+
+    .footer { padding: 24px 0 31px; border-top: 1px solid rgba(196,232,211,.09); background: rgba(5,10,13,.36); }
+    .footer-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .footer-brand { display: inline-flex; align-items: center; gap: 9px; color: #e5eee8; font-size: 12px; font-weight: 850; }
+    .footer-brand img { width: 30px; height: 32px; object-fit: contain; }
+    .footer-note { margin-top: 5px; color: #77847e; font-size: 9px; }
+    .footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 17px; color: #a1aea7; font-size: 10px; }
+    .footer-links a { color: #b9c8bf; text-decoration: none; }
+    .footer-links a:hover { color: var(--mint); }
+    .telegram-text { color: #a1aea7; }
+
+    @keyframes pulse { 0% { transform: scale(.72); opacity: .8; } 100% { transform: scale(1.8); opacity: 0; } }
+    @keyframes glow { 0%,100% { opacity: .6; transform: scale(.95); } 50% { opacity: 1; transform: scale(1.04); } }
+    @media (max-width: 980px) {
+      .nav-links { gap: 15px; }
+      .nav-side { gap: 16px; }
+      .hero { grid-template-columns: 1fr; gap: 32px; padding-top: 64px; }
+      .hero-copy { max-width: 760px; }
+      .hero-lead { max-width: 650px; }
+      .hero-visual { width: min(100%, 850px); margin-inline: auto; }
+      .launcher-frame { transform: none; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 30px, 1180px); }
+      .nav { min-height: 66px; gap: 10px; }
+      .brand { min-width: 0; gap: 7px; }
+      .brand-logo { width: 35px; height: 38px; }
+      .brand-name { font-size: 16px; }
+      .nav-links { display: none; }
+      .nav-side { gap: 8px; }
+      .nav-actions { gap: 6px; }
+      .lang-button { min-width: 37px; height: 37px; padding-inline: 7px; }
+      .nav-actions .button { min-height: 38px; padding: 0 11px; font-size: 11px; }
+      .hero { padding: 54px 0 47px; gap: 24px; min-height: 0; }
+      h1 { font-size: clamp(42px, 12vw, 59px); }
+      .hero-lead { font-size: 14px; }
+      .hero-actions .button { flex: 1 1 auto; min-height: 48px; padding-inline: 13px; font-size: 12px; }
+      .hero-meta { gap: 6px; }
+      .meta-chip { padding: 6px 8px; font-size: 9px; }
+      .launcher-frame { padding: 5px; border-radius: 13px; }
+      .launcher-shot { border-radius: 8px; }
+      .shot-pin { right: 13px; top: 13px; padding: 6px 8px; font-size: 8px; }
+      .shot-caption { padding: 8px 3px 3px; font-size: 8px; }
+      .shot-caption strong { font-size: 9px; }
+      .quick-inner { grid-template-columns: 1fr 1fr; }
+      .quick-item { min-height: 67px; justify-content: flex-start; padding-left: 12px; border-bottom: 1px solid rgba(196,232,211,.07); }
+      .quick-item:nth-child(2) { border-right: 0; }
+      .quick-item:nth-child(3), .quick-item:nth-child(4) { border-bottom: 0; }
+      .section { padding: 65px 0; }
+      .feature-grid, .faq-grid { grid-template-columns: 1fr; }
+      .feature-card { min-height: 0; padding: 19px; }
+      .release-box { grid-template-columns: 1fr; gap: 22px; padding: 23px 19px; }
+      .release-version { font-size: 53px; }
+      .closing { padding-bottom: 56px; }
+      .closing-box { padding: 35px 17px; }
+      .footer-row { align-items: flex-start; flex-direction: column; }
+      .footer-links { gap: 10px 15px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="BesterLauncher — главная">
+        <img class="brand-logo" src="__LOGO_DATA__" alt="">
+        <span class="brand-name"><span>Bester</span><span>Launcher</span></span>
+      </a>
+      <div class="nav-side">
+        <nav class="nav-links" aria-label="Основная навигация">
+          <a href="#features" data-i18n="navFeatures">Возможности</a>
+          <a href="#release" data-i18n="navRelease">Обновление</a>
+          <a href="#faq" data-i18n="navFaq">FAQ</a>
+        </nav>
+        <div class="nav-actions">
+          <button class="lang-button" id="langToggle" type="button" aria-label="Переключить язык">EN</button>
+          <a class="button button-primary" href="https://github.com/tipmetro-bot/BesterLauncher/releases/latest" target="_blank" rel="noopener noreferrer"><span data-i18n="navDownload">Скачать</span><span class="arrow" aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="wrap hero" aria-labelledby="heroTitle">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="status-dot" aria-hidden="true"></span><span data-i18n="heroEyebrow">MINECRAFT · WINDOWS</span></div>
+        <h1 id="heroTitle"><span data-i18n="heroLine1">Весь Minecraft.</span><br><span class="green-text" data-i18n="heroLine2">Один лаунчер.</span></h1>
+        <p class="hero-lead" data-i18n="heroLead">Java и Bedrock, игровые сборки, моды и игра с друзьями — собраны в одном приложении для Windows.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="https://github.com/tipmetro-bot/BesterLauncher/releases/latest" target="_blank" rel="noopener noreferrer"><span data-i18n="heroDownload">Скачать лаунчер</span><span class="arrow" aria-hidden="true">↗</span></a>
+          <a class="button button-quiet" href="#features" data-i18n="heroFeatures">Возможности</a>
+        </div>
+        <div class="hero-meta">
+          <span class="meta-chip meta-green">● <span data-i18n="metaJavaBedrock">Java + Bedrock</span></span>
+          <span class="meta-chip"><b>Windows 10+</b></span>
+          <span class="meta-chip"><span data-i18n="metaVersion">Версия</span> <b>1.7.0</b></span>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="visual-glow" aria-hidden="true"></div>
+        <figure class="launcher-frame">
+          <span class="shot-pin"><span class="status-dot" aria-hidden="true"></span><span data-i18n="shotPin">BesterLauncher</span></span>
+          <img class="launcher-shot" id="launcherScreenshot" src="__SCREENSHOT_DATA__" alt="Главный экран BesterLauncher: сборка Fabric, Minecraft Java Edition и кнопка запуска игры">
+          <figcaption class="shot-caption"><strong data-i18n="shotCaption">Главный экран BesterLauncher</strong><span data-i18n="shotVersion">Версия приложения 1.7.0</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="quick-strip" aria-label="Ключевые возможности">
+      <div class="wrap quick-inner">
+        <div class="quick-item"><span class="quick-icon">◈</span><span><strong>Java + Bedrock</strong><small data-i18n="quickOne">Две редакции Minecraft</small></span></div>
+        <div class="quick-item"><span class="quick-icon">▦</span><span><strong data-i18n="quickTwoTitle">Свои сборки</strong><small data-i18n="quickTwo">Моды, миры, настройки</small></span></div>
+        <div class="quick-item"><span class="quick-icon">⌘</span><span><strong data-i18n="quickThreeTitle">Игра с друзьями</strong><small data-i18n="quickThree">Серверы и сеть</small></span></div>
+        <div class="quick-item"><span class="quick-icon">⚙</span><span><strong data-i18n="quickFourTitle">Твои настройки</strong><small data-i18n="quickFour">Интерфейс и Java</small></span></div>
+      </div>
+    </section>
+
+    <section class="wrap section" id="features">
+      <div class="section-head">
+        <span class="kicker" data-i18n="featuresKicker">Возможности лаунчера</span>
+        <h2 data-i18n="featuresTitle">Всё для игры —<br>в одном месте.</h2>
+        <p data-i18n="featuresLead">Собери удобное игровое пространство: от чистой версии до модифицированной сборки и сетевой игры.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card"><div class="feature-icon">◈</div><h3 data-i18n="feature1Title">Java и Bedrock</h3><p data-i18n="feature1Text">Запускай обе редакции Minecraft из одного приложения. Для Bedrock нужна лицензия Microsoft.</p></article>
+        <article class="feature-card"><div class="feature-icon">▦</div><h3 data-i18n="feature2Title">Отдельные сборки</h3><p data-i18n="feature2Text">Vanilla, Fabric, Forge, NeoForge и Quilt — со своими модами, настройками и мирами.</p></article>
+        <article class="feature-card"><div class="feature-icon">⌕</div><h3 data-i18n="feature3Title">Каталог контента</h3><p data-i18n="feature3Text">Ищи моды, модпаки, ресурспаки и шейдеры через Modrinth и CurseForge.</p></article>
+        <article class="feature-card"><div class="feature-icon">✦</div><h3 data-i18n="feature4Title">Скины</h3><p data-i18n="feature4Text">Храни библиотеку скинов и редактируй их во встроенном редакторе.</p></article>
+        <article class="feature-card"><div class="feature-icon">⌘</div><h3 data-i18n="feature5Title">Серверы и сеть</h3><p data-i18n="feature5Text">Проверяй статус серверов и используй сетевую вкладку для совместной игры.</p></article>
+        <article class="feature-card"><div class="feature-icon">⚙</div><h3 data-i18n="feature6Title">Настрой под себя</h3><p data-i18n="feature6Text">Управляй Java, оперативной памятью, внешним видом и параметрами запуска.</p></article>
+      </div>
+    </section>
+
+    <section class="wrap section" id="release" style="padding-top:0">
+      <div class="release-box">
+        <div>
+          <span class="release-badge"><span class="status-dot" aria-hidden="true"></span><span data-i18n="releaseBadge">Текущая версия</span></span>
+          <div class="release-version">1.7.0</div>
+          <p class="release-copy" data-i18n="releaseIntro">Инструменты обновления и улучшения для ежедневной игры.</p>
+        </div>
+        <div>
+          <ul class="release-list">
+            <li><span class="checkmark">✓</span><span data-i18n="release1">Автоматическая проверка версии и установка обновления, когда будет подключён публичный HTTPS-канал релизов.</span></li>
+            <li><span class="checkmark">✓</span><span data-i18n="release2">Проверка SHA-256 загруженного установщика перед запуском.</span></li>
+            <li><span class="checkmark">✓</span><span data-i18n="release3">Автообновление можно включить или отключить в настройках; также доступна ручная проверка.</span></li>
+            <li><span class="checkmark">✓</span><span data-i18n="release4">Бэкапы игровых сборок в переносимом формате .besterpack.</span></li>
+          </ul>
+          <div class="update-note"><strong data-i18n="noteLabel">Обрати внимание:</strong> <span data-i18n="updateNote">публичный HTTPS-источник автообновлений пока не подключён. Сейчас установщик доступен на странице GitHub Releases.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section" id="faq">
+      <div class="section-head"><span class="kicker" data-i18n="faqKicker">Перед запуском</span><h2 data-i18n="faqTitle">Коротко о важном.</h2></div>
+      <div class="faq-grid">
+        <details><summary data-i18n="faq1q">BesterLauncher — официальный лаунчер Minecraft?</summary><p data-i18n="faq1a">Нет. Это независимый проект, не связанный с Mojang Studios или Microsoft.</p></details>
+        <details><summary data-i18n="faq2q">Где скачать установщик?</summary><p data-i18n="faq2a">Кнопка скачивания открывает GitHub Releases. Выбери последний доступный релиз и его Setup (.exe).</p></details>
+        <details><summary data-i18n="faq3q">Нужна ли лицензия Minecraft?</summary><p data-i18n="faq3a">Для Bedrock нужна лицензия Microsoft. Официальный вход в Minecraft Java выполняется через Microsoft.</p></details>
+        <details><summary data-i18n="faq4q">Автообновление уже работает?</summary><p data-i18n="faq4a">Код обновления готов, но публичный HTTPS-манифест пока не подключён. Пока устанавливай обновления вручную со страницы GitHub Releases.</p></details>
+      </div>
+    </section>
+
+    <section class="wrap closing">
+      <div class="closing-box">
+        <span class="kicker" data-i18n="closingKicker">Начни с BesterLauncher</span>
+        <h2 data-i18n="closingTitle">Твоя следующая игра — в одном клике.</h2>
+        <p data-i18n="closingText">Открой страницу релизов GitHub, скачай последнюю версию и настрой лаунчер под себя.</p>
+        <a class="button button-primary" href="https://github.com/tipmetro-bot/BesterLauncher/releases/latest" target="_blank" rel="noopener noreferrer"><span data-i18n="heroDownload">Скачать лаунчер</span><span class="arrow" aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-row">
+      <div>
+        <div class="footer-brand"><img src="__LOGO_DATA__" alt=""><span>BesterLauncher</span></div>
+        <div class="footer-note" data-i18n="footerNote">Неофициальный проект · Windows 10+ · Версия 1.7.0</div>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/tipmetro-bot/BesterLauncher" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/tipmetro-bot/BesterLauncher/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>
+        <span class="telegram-text">Telegram: https://t.me/besterlauncher</span>
+        <a href="https://www.tiktok.com/@besterlauncher" target="_blank" rel="noopener noreferrer">TikTok</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // If the GitHub repository slug differs, change it once here.
+    const REPO = "tipmetro-bot/BesterLauncher";
+    const GITHUB = `https://github.com/${REPO}`;
+    const RELEASES = `${GITHUB}/releases/latest`;
+    document.querySelectorAll('a[href*="/BesterLauncher/releases/latest"]').forEach(a => a.href = RELEASES);
+    document.querySelectorAll('a[href="https://github.com/tipmetro-bot/BesterLauncher"]').forEach(a => a.href = GITHUB);
+
+    const strings = {
+      ru: {
+        navFeatures:"Возможности", navRelease:"Обновление", navFaq:"FAQ", navDownload:"Скачать",
+        heroEyebrow:"MINECRAFT · WINDOWS", heroLine1:"Весь Minecraft.", heroLine2:"Один лаунчер.", heroLead:"Java и Bedrock, игровые сборки, моды и игра с друзьями — собраны в одном приложении для Windows.", heroDownload:"Скачать лаунчер", heroFeatures:"Возможности", metaJavaBedrock:"Java + Bedrock", metaVersion:"Версия", shotPin:"BesterLauncher", shotCaption:"Главный экран BesterLauncher", shotVersion:"Версия приложения 1.7.0",
+        quickOne:"Две редакции Minecraft", quickTwoTitle:"Свои сборки", quickTwo:"Моды, миры, настройки", quickThreeTitle:"Игра с друзьями", quickThree:"Серверы и сеть", quickFourTitle:"Твои настройки", quickFour:"Интерфейс и Java",
+        featuresKicker:"Возможности лаунчера", featuresTitle:"Всё для игры —\nв одном месте.", featuresLead:"Собери удобное игровое пространство: от чистой версии до модифицированной сборки и сетевой игры.",
+        feature1Title:"Java и Bedrock",feature1Text:"Запускай обе редакции Minecraft из одного приложения. Для Bedrock нужна лицензия Microsoft.",feature2Title:"Отдельные сборки",feature2Text:"Vanilla, Fabric, Forge, NeoForge и Quilt — со своими модами, настройками и мирами.",feature3Title:"Каталог контента",feature3Text:"Ищи моды, модпаки, ресурспаки и шейдеры через Modrinth и CurseForge.",feature4Title:"Скины",feature4Text:"Храни библиотеку скинов и редактируй их во встроенном редакторе.",feature5Title:"Серверы и сеть",feature5Text:"Проверяй статус серверов и используй сетевую вкладку для совместной игры.",feature6Title:"Настрой под себя",feature6Text:"Управляй Java, оперативной памятью, внешним видом и параметрами запуска.",
+        releaseBadge:"Текущая версия",releaseIntro:"Инструменты обновления и улучшения для ежедневной игры.",release1:"Автоматическая проверка версии и установка обновления, когда будет подключён публичный HTTPS-канал релизов.",release2:"Проверка SHA-256 загруженного установщика перед запуском.",release3:"Автообновление можно включить или отключить в настройках; также доступна ручная проверка.",release4:"Бэкапы игровых сборок в переносимом формате .besterpack.",noteLabel:"Обрати внимание:",updateNote:"публичный HTTPS-источник автообновлений пока не подключён. Сейчас установщик доступен на странице GitHub Releases.",
+        faqKicker:"Перед запуском",faqTitle:"Коротко о важном.",faq1q:"BesterLauncher — официальный лаунчер Minecraft?",faq1a:"Нет. Это независимый проект, не связанный с Mojang Studios или Microsoft.",faq2q:"Где скачать установщик?",faq2a:"Кнопка скачивания открывает GitHub Releases. Выбери последний доступный релиз и его Setup (.exe).",faq3q:"Нужна ли лицензия Minecraft?",faq3a:"Для Bedrock нужна лицензия Microsoft. Официальный вход в Minecraft Java выполняется через Microsoft.",faq4q:"Автообновление уже работает?",faq4a:"Код обновления готов, но публичный HTTPS-манифест пока не подключён. Пока устанавливай обновления вручную со страницы GitHub Releases.",
+        closingKicker:"Начни с BesterLauncher",closingTitle:"Твоя следующая игра — в одном клике.",closingText:"Открой страницу релизов GitHub, скачай последнюю версию и настрой лаунчер под себя.",footerNote:"Неофициальный проект · Windows 10+ · Версия 1.7.0",screenshotAlt:"Главный экран BesterLauncher: сборка Fabric, Minecraft Java Edition и кнопка запуска игры",navLabel:"Основная навигация",langLabel:"Переключить язык"
+      },
+      en: {
+        navFeatures:"Features", navRelease:"Update", navFaq:"FAQ", navDownload:"Download",
+        heroEyebrow:"MINECRAFT · WINDOWS", heroLine1:"All of Minecraft.", heroLine2:"One launcher.", heroLead:"Java and Bedrock, game instances, mods, and multiplayer—together in one Windows app.", heroDownload:"Download launcher", heroFeatures:"Explore features", metaJavaBedrock:"Java + Bedrock", metaVersion:"Version", shotPin:"BesterLauncher", shotCaption:"BesterLauncher home screen", shotVersion:"App version 1.7.0",
+        quickOne:"Both Minecraft editions", quickTwoTitle:"Your own instances", quickTwo:"Mods, worlds, settings", quickThreeTitle:"Play with friends", quickThree:"Servers and networking", quickFourTitle:"Your settings", quickFour:"Interface and Java",
+        featuresKicker:"Launcher features", featuresTitle:"Everything to play—\nin one place.", featuresLead:"Build a comfortable game setup, from a clean install to modded instances and multiplayer.",
+        feature1Title:"Java and Bedrock",feature1Text:"Launch both Minecraft editions from one app. Bedrock requires a Microsoft license.",feature2Title:"Separate instances",feature2Text:"Vanilla, Fabric, Forge, NeoForge, and Quilt—with their own mods, settings, and worlds.",feature3Title:"Content catalog",feature3Text:"Find mods, modpacks, resource packs, and shaders through Modrinth and CurseForge.",feature4Title:"Skins",feature4Text:"Keep a skin library and edit skins with the built-in editor.",feature5Title:"Servers and network",feature5Text:"Check server status and use the Network tab to play together.",feature6Title:"Make it yours",feature6Text:"Manage Java, memory, appearance, and launch settings.",
+        releaseBadge:"Current version",releaseIntro:"Update tools and quality-of-life improvements for everyday play.",release1:"Automatic version checks and updates once a public HTTPS release feed is connected.",release2:"SHA-256 verification of the downloaded installer before launch.",release3:"Enable or disable auto-updates in Settings, or check manually.",release4:"Portable backups of game instances in .besterpack format.",noteLabel:"Please note:",updateNote:"the public HTTPS update feed is not connected yet. For now, the installer is available from GitHub Releases.",
+        faqKicker:"Before you play",faqTitle:"A few useful details.",faq1q:"Is BesterLauncher an official Minecraft launcher?",faq1a:"No. It is an independent project and is not affiliated with Mojang Studios or Microsoft.",faq2q:"Where can I download the installer?",faq2a:"The download button opens GitHub Releases. Choose the latest available release and its Setup (.exe).",faq3q:"Do I need a Minecraft license?",faq3a:"Bedrock requires a Microsoft license. Official Minecraft Java sign-in uses Microsoft.",faq4q:"Does auto-update work already?",faq4a:"The updater code is ready, but the public HTTPS manifest is not connected yet. Install updates manually from GitHub Releases for now.",
+        closingKicker:"Get started with BesterLauncher",closingTitle:"Your next game is one click away.",closingText:"Open GitHub Releases, get the latest version, and set up the launcher your way.",footerNote:"Unofficial project · Windows 10+ · Version 1.7.0",screenshotAlt:"BesterLauncher home screen showing a Fabric instance, Minecraft Java Edition, and the Play button",navLabel:"Main navigation",langLabel:"Switch language"
+      }
+    };
+    let currentLanguage = "ru";
+    function setLanguage(lang) {
+      currentLanguage = lang;
+      document.documentElement.lang = lang;
+      document.title = lang === "ru" ? "BesterLauncher — Minecraft в одном лаунчере" : "BesterLauncher — Minecraft in one launcher";
+      document.querySelector('meta[name="description"]').content = lang === "ru"
+        ? "BesterLauncher — Minecraft Java и Bedrock, сборки, моды и игра с друзьями в одном лаунчере для Windows."
+        : "BesterLauncher brings Minecraft Java and Bedrock, modded instances, and multiplayer together in one Windows launcher.";
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const value = strings[lang][el.dataset.i18n];
+        if (value !== undefined) el.textContent = value;
+      });
+      document.querySelector(".nav-links").setAttribute("aria-label", strings[lang].navLabel);
+      document.getElementById("langToggle").setAttribute("aria-label", strings[lang].langLabel);
+      document.getElementById("launcherScreenshot").alt = strings[lang].screenshotAlt;
+      document.getElementById("langToggle").textContent = lang === "ru" ? "EN" : "RU";
+      try { localStorage.setItem("besterlauncher-language", lang); } catch (_) {}
+    }
+    document.getElementById("langToggle").addEventListener("click", () => setLanguage(currentLanguage === "ru" ? "en" : "ru"));
+    try { if (localStorage.getItem("besterlauncher-language") === "en") setLanguage("en"); } catch (_) {}
+  </script>
+</body>
+</html>
